@@ -64,7 +64,7 @@ EOF
 
 ### Execute from Linux (automatic config file edit):
 ```bash
-ssh -i ~/.ssh/my_key Administrator@ALIAS "powershell -Command \"(Get-Content C:\ProgramData\ssh\sshd_config) -replace '#?PasswordAuthentication yes', 'PasswordAuthentication no' | Set-Content C:\ProgramData\ssh\sshd_config; Restart-Service sshd\""
+ssh -i ~/.ssh/windows_server_key Administrator@ALIAS "powershell -Command \"(Get-Content C:\ProgramData\ssh\sshd_config) -replace '#?PasswordAuthentication yes', 'PasswordAuthentication no' | Set-Content C:\ProgramData\ssh\sshd_config; Restart-Service sshd\""
 ```
 
 ### Or perform manually on Windows (Notepad with Admin privileges):
