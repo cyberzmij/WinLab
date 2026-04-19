@@ -1,53 +1,54 @@
-# Konfiguracja OpenSSH na Windows Server 2019 (Linux Client)
+# OpenSSH Configuration on Windows Server 2019 (Linux Client)
 
-## 1. Instalacja serwera (Windows PowerShell Admin)
+## 1. Server Installation (Windows PowerShell Admin)
 ```powershell
-# Instalacja
+# Installation
 Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
 
-# Start i Auto-start
+# Start and Auto-start
 Start-Service sshd
 Set-Service -Name sshd -StartupType 'Automatic'
 
-# Ustawienie PowerShell jako domyślnej powłoki
-On Windows Powershell
+# Setting PowerShell as the default shell
+# On Windows PowerShell:
 New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name "DefaultShell" -Value "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -PropertyType String -Force
-or On Linux Bash
+# Or from Linux Bash:
 ssh Administrator@IP "powershell -Command \"New-ItemProperty -Path 'HKLM:\SOFTWARE\OpenSSH' -Name 'DefaultShell' -Value 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe' -PropertyType String -Force\""
+```
 
-Konta:
-Lokalne:		uzytkownik@ip			Najprostsze, działa z kluczami RSA.
-Domenowe (AD):		DOMENA\\uzytkownik@ip		Wymaga łączności z Kontrolerem Domeny.
-Entra ID (SaaS):	AzureAD\\email@domena.pl@ip	Wymaga serwera wpiętego w Entra ID.
+Accounts:
+- Local:          `user@ip`                 Simplest, works with RSA keys.
+- Domain (AD):    `DOMAIN\\user@ip`         Requires connectivity with the Domain Controller.
+- Entra ID (SaaS): `AzureAD\\email@domain.com@ip` Requires the server to be joined to Entra ID.
 
-2. Generowanie klucza (Linux Terminal)
-Bash
-# Tworzy klucz o własnej nazwie bez hasła (passphrase)
+## 2. Key Generation (Linux Terminal)
+```bash
+# Creates an RSA key with a custom name and no passphrase
 ssh-keygen -t rsa -b 4096 -f ~/.ssh/windows_server_key
+```
 
-
-3. Przesłanie klucza na serwer (Linux Terminal)
-Bash
-# 1. Tworzy folder .ssh na Windowsie
+## 3. Transferring the Key to the Server (Linux Terminal)
+```bash
+# 1. Creates the .ssh folder on Windows
 ssh Administrator@IP "powershell -Command New-Item -ItemType Directory -Force -Path \$HOME\.ssh"
 
-# 2. Kopiuje klucz publiczny
+# 2. Copies the public key
 scp ~/.ssh/windows_server_key.pub Administrator@IP:.ssh/authorized_keys
+```
 
+## 4. Permission Configuration for Administrator (Linux Terminal)
+For accounts in the Administrators group on Windows Server 2019, keys must be in the `ProgramData` folder.
 
-4. Konfiguracja uprawnień dla Administratora (Linux Terminal)
-Dla kont z grupy Administrators na Windows Server 2019 klucze muszą być w folderze ProgramData.
-
-Bash
+```bash
 ssh Administrator@IP "powershell -Command \"Move-Item -Path \$HOME\.ssh\authorized_keys -Destination C:\ProgramData\ssh\administrators_authorized_keys -Force; icacls C:\ProgramData\ssh\administrators_authorized_keys /inheritance:r; icacls C:\ProgramData\ssh\administrators_authorized_keys /grant 'NT AUTHORITY\SYSTEM:F'; icacls C:\ProgramData\ssh\administrators_authorized_keys /grant 'BUILTIN\Administrators:F'\""
+```
 
-
-5. Logowanie
-Bash
-# Użycie konkretnego klucza
+## 5. Logging In
+```bash
+# Using a specific key
 ssh -i ~/.ssh/windows_server_key Administrator@IP
 
-# Alias w ~/.ssh/config dla wygody
+# Alias in ~/.ssh/config for convenience
 cat <<EOF >> ~/.ssh/config
 
 Host win-srv
@@ -56,17 +57,21 @@ Host win-srv
     IdentityFile ~/.ssh/windows_server_key
     LogLevel ERROR
 EOF
+```
 
+## 6. Disabling Password Authentication (Hardening)
+**WARNING:** Before performing this step, ensure that key-based login is working!
 
-## 6. Wyłączenie logowania hasłem (Hardening)
-**UWAGA:** Przed wykonaniem tego kroku upewnij się, że logowanie kluczem działa!
-### Wykonaj z Linuxa (automatyczna edycja pliku config):
+### Execute from Linux (automatic config file edit):
 ```bash
-ssh -i ~/.ssh/moj_klucz Administrator@ALIAS "powershell -Command \"(Get-Content C:\ProgramData\ssh\sshd_config) -replace '#?PasswordAuthentication yes', 'PasswordAuthentication no' | Set-Content C:\ProgramData\ssh\sshd_config; Restart-Service sshd\""
-Lub wykonaj ręcznie na Windowsie (Notepad z uprawnieniami Admina):
-Otwórz C:\ProgramData\ssh\sshd_config.
-Znajdź linię PasswordAuthentication yes.
-Zmień ją na PasswordAuthentication no (usuń # na początku, jeśli jest).
-Zrestartuj usługę: Restart-Service sshd.
-### Dlaczego to jest ważne?
-W systemie Windows Server 2019 domyślnie aktywna jest sekcja `Match Group administrators` na końcu pliku `sshd_config`. Czasami nadpisuje ona globalne ustawienia. Jeśli po powyższej zmianie logowanie hasłem nadal by działało (co jest błędem bezpieczeństwa), należy sprawdzić, czy na samym dole pliku nie ma wpisu `PasswordAuthentication yes` wewnątrz bloku `Match`.
+ssh -i ~/.ssh/my_key Administrator@ALIAS "powershell -Command \"(Get-Content C:\ProgramData\ssh\sshd_config) -replace '#?PasswordAuthentication yes', 'PasswordAuthentication no' | Set-Content C:\ProgramData\ssh\sshd_config; Restart-Service sshd\""
+```
+
+### Or perform manually on Windows (Notepad with Admin privileges):
+1. Open `C:\ProgramData\ssh\sshd_config`.
+2. Find the line `PasswordAuthentication yes`.
+3. Change it to `PasswordAuthentication no` (remove `#` at the beginning if present).
+4. Restart the service: `Restart-Service sshd`.
+
+### Why is this important?
+On Windows Server 2019, the `Match Group administrators` section at the end of the `sshd_config` file is active by default. It sometimes overrides global settings. If password login still works after the above change (which is a security flaw), check if there is a `PasswordAuthentication yes` entry inside the `Match` block at the very bottom of the file.
