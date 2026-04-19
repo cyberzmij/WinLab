@@ -8,24 +8,24 @@ date_added: "2026-04-19"
 
 # Skill Creator Gemini
 
-> Twórz skille, które faktycznie działają w Gemini CLI.
+> Create skills that actually work in Gemini CLI.
 
 ## Purpose
-Automatyzacja procesu tworzenia nowych umiejętności (skills) z gwarancją pełnej zgodności z formatem metadanych Gemini CLI. Zapobiega błędom "niewidzialnych skilli" poprzez wymuszanie poprawnego nagłówka YAML.
+Automating the process of creating new skills with a guarantee of full compatibility with the Gemini CLI metadata format. It prevents "invisible skills" errors by enforcing a correct YAML header.
 
 ## Guidelines for Skill Creation
-Podczas tworzenia nowego skilla, to narzędzie MUSI:
-1. **Zawsze generować nagłówek YAML** zawierający: `name`, `description`, `risk`, `source` oraz `date_added`.
-2. **Używać struktury:** Nagłówek -> Tytuł (#) -> Blockquote (>) -> Sekcje (## Purpose, ## Guidelines, ## Trigger Phrases, ## Examples).
-3. **Instalować lokalnie:** Domyślnie sugerować ścieżkę `.gemini/skills/` w bieżącym projekcie.
-4. **Weryfikować zgodność:** Przed zapisaniem pliku sprawdzić, czy `name` w YAML zgadza się z nazwą folderu.
+When creating a new skill, this tool MUST:
+1. **Always generate a YAML header** containing: `name`, `description`, `risk`, `source`, and `date_added`.
+2. **Use the structure:** Header -> Title (#) -> Blockquote (>) -> Sections (## Purpose, ## Guidelines, ## Trigger Phrases, ## Examples).
+3. **Install locally:** Suggest the `.gemini/skills/` path in the current project by default.
+4. **Verify compatibility:** Check if the `name` in YAML matches the folder name before saving the file.
 
 ## Mandatory Metadata Template
-Każdy nowy skill musi zaczynać się od:
+Every new skill must start with:
 ```yaml
 ---
 name: [kebab-case-name]
-description: "[Krótki opis w cudzysłowie]"
+description: "[Short description in quotes]"
 risk: safe
 source: local
 date_added: "YYYY-MM-DD"
@@ -33,14 +33,14 @@ date_added: "YYYY-MM-DD"
 ```
 
 ## Trigger Phrases
-- "stwórz nowy skill gemini"
-- "zaprojektuj umiejętność dla gemini cli"
-- "nowy lokalny skill"
-- "popraw format skilla gemini"
+- "create new gemini skill"
+- "design skill for gemini cli"
+- "new local skill"
+- "fix gemini skill format"
 
 ## Examples of Usage
-### Generowanie szkieletu
-"Użyj skill-creator-gemini, aby stworzyć skill 'network-tools' z opisem 'Narzędzia sieciowe dla SSH'."
+### Generating a skeleton
+"Use skill-creator-gemini to create a 'network-tools' skill with the description 'Network tools for SSH'."
 
-### Walidacja istniejącego pliku
-"Sprawdź czy mój plik SKILL.md jest zgodny ze standardem skill-creator-gemini."
+### Validating an existing file
+"Check if my SKILL.md file is compliant with the skill-creator-gemini standard."

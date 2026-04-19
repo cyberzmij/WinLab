@@ -8,50 +8,50 @@ date_added: "2026-04-19"
 
 # PowerShell Windows SSH
 
-> Kompleksowy zestaw reguł i technik do bezbłędnej zdalnej administracji Windows Server z poziomu Linuxa.
+> A comprehensive set of rules and techniques for error-free remote Windows Server administration from Linux.
 
 ## Purpose
-Zapewnienie bezpiecznego i przewidywalnego wykonywania poleceń PowerShell na systemach Windows przez SSH. Skill rozwiązuje problemy z interpretacją znaków przez Bash/SSH, polityką wykonania oraz kodowaniem.
+Ensuring safe and predictable execution of PowerShell commands on Windows systems via SSH. The skill resolves issues with character interpretation by Bash/SSH, execution policies, and encoding.
 
 ## Guidelines
 
-### 1. Składnia i Bezpieczeństwo Interpretacji
-- **Raw Data over Logic:** Unikaj obliczeń i logiki wewnątrz one-linerów (np. przeliczania bajtów na GB). Pobieraj surowe dane i formatuj lokalnie lub pozwól na to AI.
-- **Minimalizacja znaków specjalnych:** Ograniczaj użycie `{ }`, `$` oraz `$_` w poleceniach przesyłanych bezpośrednio w linii komend. Każdy taki znak to ryzyko błędnej interpretacji przez Bash.
-- **Quoting Strategy:** Zawsze zamykaj całą komendę SSH w pojedyncze cudzysłowy `' '`. Jeśli wewnątrz musisz użyć cudzysłowów dla PowerShell, używaj ucieczki backslashem: `\"`.
-- **Złota Zasada:** Jeśli komenda zajmuje więcej niż jedną linię lub wymaga użycia klamer/dolarów, nie pisz one-linera. Stwórz lokalny plik `.ps1` i prześlij go przez Pipe.
+### 1. Syntax and Interpretation Safety
+- **Raw Data over Logic:** Avoid calculations and logic inside one-liners (e.g., converting bytes to GB). Retrieve raw data and format it locally or let the AI handle it.
+- **Special Character Minimization:** Limit the use of `{ }`, `$`, and `$_` in commands sent directly in the command line. Every such character risks misinterpretation by Bash.
+- **Quoting Strategy:** Always enclose the entire SSH command in single quotes `' '`. If you must use double quotes for PowerShell inside, use backslash escaping: `\"`.
+- **Golden Rule:** If the command spans more than one line or requires braces/dollars, do not write a one-liner. Create a local `.ps1` file and send it via Pipe.
 
-### 2. Wykonywanie i Przesyłanie
-- **Pipe Execution (Standard):** Preferuj `cat script.ps1 | ssh host "powershell -ExecutionPolicy Bypass -Command -"` zamiast kopiowania plików przez SCP. To eliminuje pliki tymczasowe na serwerze.
-- **Execution Policy:** Zawsze wymuszaj `-ExecutionPolicy Bypass` dla każdego wywołania, aby uniknąć blokad systemowych.
-- **Non-Interactive:** Zawsze dodawaj `-Force -Confirm:$false` do poleceń modyfikujących stan systemu, aby uniknąć zawieszenia sesji na interaktywnym pytaniu [Y/N].
+### 2. Execution and Transfer
+- **Pipe Execution (Standard):** Prefer `cat script.ps1 | ssh host "powershell -ExecutionPolicy Bypass -Command -"` over copying files via SCP. This eliminates temporary files on the server.
+- **Execution Policy:** Always enforce `-ExecutionPolicy Bypass` for every call to avoid system blocks.
+- **Non-Interactive:** Always add `-Force -Confirm:$false` to commands that modify system state to avoid the session hanging on an interactive [Y/N] prompt.
 
-### 3. Dane i Formatowanie
-- **Format-List (fl):** Zawsze używaj `| fl` dla czytelności wyników. Tabele (`ft`) są ucinane w konsoli SSH i trudniejsze do sparsowania.
-- **Efektywne Filtrowanie:** Używaj wbudowanego parametru `-Filter` w cmdletach (np. `Get-CimInstance ... -Filter "..."`) zamiast przesyłać wszystkie obiekty do `Where-Object`.
-- **Encoding:** Wymuszaj UTF-8 na początku skryptów: `$OutputEncoding = [System.Text.Encoding]::UTF8`, aby uniknąć błędów w kodowaniu znaków.
+### 3. Data and Formatting
+- **Format-List (fl):** Always use `| fl` for better result readability. Tables (`ft`) are often truncated in the SSH console and are harder to parse.
+- **Efficient Filtering:** Use the built-in `-Filter` parameter in cmdlets (e.g., `Get-CimInstance ... -Filter "..."`) instead of sending all objects to `Where-Object`.
+- **Encoding:** Enforce UTF-8 at the beginning of scripts: `$OutputEncoding = [System.Text.Encoding]::UTF8`, to avoid character encoding errors.
 
-### 4. Metoda "Atomowa" (-EncodedCommand)
-Dla bardzo skomplikowanych komend, których nie można wysłać jako plik, użyj Base64:
+### 4. Atomic Method (-EncodedCommand)
+For very complex commands that cannot be sent as a file, use Base64:
 ```bash
 B64=$(echo -n '$script' | iconv -t utf-16le | base64 -w 0)
 ssh host "powershell -EncodedCommand $B64"
 ```
 
 ## Trigger Phrases
-- "zarządzaj windows przez ssh"
-- "wykonaj skrypt powershell na windows"
-- "problemy z kodowaniem powershell ssh"
-- "błąd składni powershell przez ssh"
-- "jak bezpiecznie wysłać polecenie do windows"
+- "manage windows via ssh"
+- "execute powershell script on windows"
+- "powershell ssh encoding issues"
+- "powershell syntax error via ssh"
+- "how to safely send command to windows"
 
 ## Examples
 
-### Pobieranie usług (Bezpieczny one-liner)
+### Retrieving services (Safe one-liner)
 `ssh ALIAS 'powershell -Command Get-Service -Filter "Status=Running" | Select-Object Name, DisplayName | fl'`
 
-### Wykonanie lokalnego skryptu (Najlepsza praktyka)
+### Executing a local script (Best practice)
 `cat ./SystemHealth.ps1 | ssh ALIAS "powershell -ExecutionPolicy Bypass -Command -"`
 
-### Bezpieczne usuwanie plików (Non-interactive)
+### Safe file deletion (Non-interactive)
 `ssh ALIAS 'powershell -Command Remove-Item -Path C:\Temp\* -Force -Confirm:$false'`

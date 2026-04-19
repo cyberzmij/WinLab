@@ -1,22 +1,22 @@
 # PowerShell Windows SSH Skill
 
-Lokalna umiejętność (skill) wspomagająca administrację systemami Windows z poziomu Linuxa przez protokół SSH.
+Local skill supporting Windows system administration from Linux via the SSH protocol.
 
-## Instalacja (Lokalna)
-Ten skill jest zainstalowany w katalogu projektu. Aby go użyć, AI agent musi mieć dostęp do pliku `SKILL.md` w tym katalogu.
+## Installation (Local)
+This skill is installed in the project directory. To use it, the AI agent must have access to the `SKILL.md` file in this directory.
 
-## Główne Funkcje
-- **Omijanie Execution Policy:** Automatyczne dodawanie flagi `-ExecutionPolicy Bypass`.
-- **Przesyłanie skryptów przez Pipe:** Wykonywanie lokalnych plików `.ps1` bez tworzenia śladów na serwerze.
-- **Obsługa UTF-8:** Rozwiązywanie problemów z polskimi znakami.
-- **Formatowanie wyników:** Optymalizacja wyjścia pod terminal Linuxa (`Format-List`).
+## Main Features
+- **Execution Policy Bypass:** Automatically adding the `-ExecutionPolicy Bypass` flag.
+- **Script Transfer via Pipe:** Executing local `.ps1` files without leaving traces on the server.
+- **UTF-8 Support:** Resolving issues with special characters.
+- **Output Formatting:** Optimizing output for the Linux terminal (`Format-List`).
 
-## Przykładowe Komendy
-1. "Sprawdź wolne miejsce na dyskach serwera TEST-w2019 używając skilla powershell-windows-ssh"
-2. "Uruchom lokalny skrypt deploy.ps1 na zdalnym serwerze przez pipe"
+## Example Commands
+1. "Check free disk space on the TEST-w2019 server using the powershell-windows-ssh skill"
+2. "Run the local deploy.ps1 script on the remote server via pipe"
 
-## Struktura
-- `SKILL.md`: Główna definicja i zasady działania.
-- `references/`: Dodatkowa dokumentacja techniczna.
-- `examples/`: Gotowe fragmenty kodu i scenariusze.
-- `scripts/`: Pomocnicze narzędzia lokalne.
+## Structure
+- `SKILL.md`: Main definition and rules of operation.
+- `references/`: Additional technical documentation.
+- `examples/`: Ready-made code snippets and scenarios.
+- `scripts/`: Local auxiliary tools.
