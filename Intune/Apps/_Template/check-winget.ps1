@@ -1,3 +1,12 @@
+<#
+---
+name: check-winget.ps1
+description: "Template detection script to check if an application is installed using winget."
+risk: safe
+source: local
+date_added: "2026-04-19"
+---
+#>
 # Intune Detection Script
 # Exit 0 if application is found
 # Exit 1 (or non-zero) if application is NOT found

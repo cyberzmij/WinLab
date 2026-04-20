@@ -1,10 +1,19 @@
+<#
+---
+name: uninstall-antigravity.ps1
+description: "Intune uninstallation script for Google Antigravity using winget."
+risk: safe
+source: local
+date_added: "2026-04-19"
+---
+#>
+Set-StrictMode -Version Latest
 # Intune Configuration:
 # Install behavior: User
 # PowerShell execution policy: Bypass
 # --------------------------------------------------
 
 # Strict mode
-Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 # Paths
