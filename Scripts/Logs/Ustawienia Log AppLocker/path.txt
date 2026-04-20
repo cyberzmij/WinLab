@@ -1,5 +1,0 @@
-Install command
-powershell.exe -ExecutionPolicy Bypass -File .\EnableAppLockerLog.ps1
-
-Uninstall command
-%SystemRoot%\system32\WindowsPowerShell\v1.0\powershell.exe Write-Output "0"
