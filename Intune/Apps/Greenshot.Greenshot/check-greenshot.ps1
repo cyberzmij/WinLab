@@ -8,6 +8,7 @@ date_added: "2026-04-21"
 ---
 #>
 Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
 
 $AppID = "Greenshot.Greenshot"
 

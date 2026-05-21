@@ -18,7 +18,18 @@ $ErrorActionPreference = "Stop"
 
 # Variables
 $ConfigName = "System.Feature.Name"
-$LogPath = Join-Path $env:ProgramData "Microsoft\IntuneManagementExtension\Logs\Config-$($ConfigName.Replace('.','-')).log"
+$LogDirectory = Join-Path $env:ProgramData "Microsoft\IntuneManagementExtension\Logs"
+$LogPath = Join-Path $LogDirectory "Config-$($ConfigName.Replace('.','-')).log"
+
+# Fallback if the path is not writable (e.g. running in User context without admin rights)
+try {
+    $TestFile = Join-Path $LogDirectory "test_write_perm.tmp"
+    [System.IO.File]::WriteAllText($TestFile, "test")
+    Remove-Item $TestFile -Force -ErrorAction SilentlyContinue
+}
+catch {
+    $LogPath = Join-Path $env:TEMP "Config-$($ConfigName.Replace('.','-')).log"
+}
 
 Start-Transcript -Path $LogPath -Append
 

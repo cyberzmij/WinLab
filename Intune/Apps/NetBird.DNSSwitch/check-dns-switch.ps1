@@ -9,6 +9,7 @@ date_added: "2026-04-19"
 #>
 # Intune Detection Script
 Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
 
 # Check if a task with the given name exists
 $taskName = "DNS Switch LAN-VPN"

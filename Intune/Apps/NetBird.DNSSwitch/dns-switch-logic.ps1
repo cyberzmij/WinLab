@@ -8,6 +8,7 @@ date_added: "2026-04-19"
 ---
 #>
 Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
 
 # NetBird DNS addition
 
@@ -74,7 +75,7 @@ foreach ($cli in $dns | Where-Object { $_.InterfaceIndex -notin $corpIdx }) {
     }
 }
 
-# (Optional) global DNS client settings — use suffixes and interface DNS servers
+# (Optional) global DNS client settings - use suffixes and interface DNS servers
 Set-DnsClientGlobalSetting -UseSuffixWhenRegistering $true -RegisterDnsRecordsWithConnectionSpecificDnsServers $true
 
 # Force immediate registration

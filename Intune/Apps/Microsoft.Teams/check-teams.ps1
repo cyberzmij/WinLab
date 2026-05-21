@@ -8,6 +8,7 @@ date_added: "2026-04-19"
 ---
 #>
 Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
 # Intune Detection Script
 # Exit 0 if application is found
 # Exit 1 if application is NOT found
